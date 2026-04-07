@@ -22,6 +22,8 @@ const resolvers = {
 async function startServer() {
 
 const app = express()
+app.use(cors())
+
 const server = new ApolloServer({
     typeDefs,
     resolvers,
@@ -30,7 +32,7 @@ const server = new ApolloServer({
 await server.start() 
 
 
-app.use('/graphql', cors(), express.json(), expressMiddleware(server))
+app.use('/graphql', express.json(), expressMiddleware(server))
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
