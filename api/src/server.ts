@@ -1,33 +1,50 @@
 import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
+import { expressMiddleware } from "@as-integrations/express5";
+import cors from 'cors'
+import express from 'express'
+
+const portGQL = 4000
 
 
-async function start() {const typeDefs = `#graphql
-     type Query {
-        hello: String
-    
-     }
-    `;
-
-const resolvers = {
+const typeDefs = `#graphql
+  type Query {
+    hello: String
+    teste: String
+  }
+`
+const resolvers = { 
     Query: {
-        hello: () => "Hello world!",
-      
-    }
+        hello: () => 'Hello world!',
+        teste: () => 'Teste'
+     }
 }
 
+async function startServer() {
+
+const app = express()
 const server = new ApolloServer({
-  typeDefs,
-  resolvers
+    typeDefs,
+    resolvers,
 });
 
-const {url } = await startStandaloneServer(server, {
-    listen: {port: 4000}
+await server.start() 
+
+
+app.use('/graphql', cors(), express.json(), expressMiddleware(server))
+
+app.get('/', (req, res) => {
+    res.send('Hello World!')
 })
 
- console.log(`🚀 Server rodando em ${url}`);
-
-
+app.listen(portGQL, () => {
+    console.log(`Server is running on http://localhost:${portGQL}`);
+    console.log(`GraphQL server is running on http://localhost:${portGQL}/graphql`);
+    })
 }
 
-start()
+startServer()
+
+
+
+
+
