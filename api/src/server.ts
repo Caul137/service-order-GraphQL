@@ -7,15 +7,25 @@ const portGQL = 4000
 
 
 const typeDefs = `#graphql
+  type Service {
+    id: ID
+    title: String
+    description: String
+    status: String
+    createdAt: String
+  }
+
   type Query {
-    hello: String
-    teste: String
+  service: [Service]
   }
 `
 const resolvers = { 
     Query: {
-        hello: () => 'Hello world!',
-        teste: () => 'Teste'
+        service: () => {
+            return [
+              {id: 1, title: "Service 1", description: "Description of Service 1", status: "active", createdAt: "2024-06-01"},
+            ]
+        }
      }
 }
 
@@ -34,12 +44,7 @@ await server.start()
 
 app.use('/graphql', express.json(), expressMiddleware(server))
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
-
 app.listen(portGQL, () => {
-    console.log(`Server is running on http://localhost:${portGQL}`);
     console.log(`GraphQL server is running on http://localhost:${portGQL}/graphql`);
     })
 }
