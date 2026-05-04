@@ -1,10 +1,11 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
+import { Link } from "react-router-dom";
 
-export default function App() {
+export default function Home() {
   const GET_DATA = gql`
     query {
-      service {
+      services {
         id
         title
         description
@@ -13,7 +14,7 @@ export default function App() {
       }
     }
   `;
-  type Service = {
+  type Services = {
     id: string;
     title: string;
     description: string;
@@ -22,7 +23,7 @@ export default function App() {
   };
 
   type Data = {
-    service: Service[];
+    services: Services[];
   };
 
   const { data, error, loading } = useQuery<Data>(GET_DATA);
@@ -38,46 +39,46 @@ export default function App() {
           Ordens de Serviço
         </h1>
 
-        <button
+        <Link to={'/create'}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
           onClick={() => console.log("ir para criação")}
         >
           + Novo Serviço
-        </button>
+        </Link>
       </div>
 
       {/* Lista */}
       <div className="bg-white rounded-xl shadow">
-        {data?.service.length === 0 ? (
+        {data?.services.length === 0 ? (
           <p className="p-6 text-gray-500">
             Nenhum serviço encontrado
           </p>
         ) : (
           <ul>
-            {data?.service.map((service) => (
+            {data?.services.map((services) => (
               <li
-                key={service.id}
+                key={services.id}
                 className="border-b last:border-none p-4 hover:bg-gray-50 transition"
               >
                 <div className="flex justify-between items-center">
                   <div>
                     <h2 className="font-semibold text-gray-800">
-                      {service.title}
+                      {services.title}
                     </h2>
                     <p className="text-sm text-gray-500">
                       Criado em:{" "}
-                      {new Date(service.createdAt).toLocaleDateString()}
+                      {new Date(services.createdAt).toLocaleDateString()}
                     </p>
                   </div>
 
                   <span
                     className={`px-3 py-1 text-sm rounded-full ${
-                      service.status === "OPEN"
+                      services.status === "OPEN"
                         ? "bg-green-100 text-green-700"
                         : "bg-gray-200 text-gray-600"
                     }`}
                   >
-                    {service.status}
+                    {services.status}
                   </span>
                 </div>
               </li>

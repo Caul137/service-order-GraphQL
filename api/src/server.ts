@@ -16,15 +16,36 @@ const typeDefs = `#graphql
   }
 
   type Query {
-  service: [Service]
+  services: [Service]
+  }
+
+  type Mutation {
+    createService(
+      title: String!
+      description: String!
+      status: String
+      ): Service 
   }
 `
+
+let services: any[] = []
+
 const resolvers = { 
     Query: {
-        service: () => {
-            return [
-              {id: 1, title: "Service 1", description: "Description of Service 1", status: "active", createdAt: "2024-06-01"},
-            ]
+        services: () => services
+     },
+
+     Mutation: {
+        createService: (_: any, args: any) => {
+          const newService = {
+            id: crypto.randomUUID(),
+            title: args.title,
+            description: args.description,
+            status: "Open",
+            createdAt: new Date().toISOString(),
+          }
+          services.push(newService)
+          return newService
         }
      }
 }
@@ -32,6 +53,7 @@ const resolvers = {
 async function startServer() {
 
 const app = express()
+
 app.use(cors())
 
 const server = new ApolloServer({
