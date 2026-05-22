@@ -2,6 +2,7 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@as-integrations/express5";
 import cors from 'cors'
 import express from 'express'
+import { prisma } from "./lib/prisma";
 
 const portGQL = 4000
 
@@ -25,29 +26,40 @@ const typeDefs = `#graphql
       description: String!
       status: String
       ): Service 
+    deleteService(id: ID!): Boolean
   }
+
+  
 `
 
-let services: any[] = []
 
 const resolvers = { 
     Query: {
-        services: () => services
+        services: async () => {
+          return await prisma.service.findMany()
+        }
      },
 
      Mutation: {
-        createService: (_: any, args: any) => {
-          const newService = {
-            id: crypto.randomUUID(),
-            title: args.title,
-            description: args.description,
-            status: "Open",
-            createdAt: new Date().toISOString(),
-          }
-          services.push(newService)
-          return newService
-        }
-     }
+         createService: async (_: any, args: any) => {
+           return await prisma.service.create({
+            data: {
+             id: crypto.randomUUID(),
+             title: args.title,
+             description: args.description,
+             status: "Open",
+             createdAt: new Date().toISOString(),
+            }
+           })
+         },
+         deleteService: async (_: any, args: any) => {
+          return await prisma.service.delete({
+            where: {
+              id: args.id
+            }
+          })
+         }
+      }
 }
 
 async function startServer() {
@@ -72,8 +84,3 @@ app.listen(portGQL, () => {
 }
 
 startServer()
-
-
-
-
-

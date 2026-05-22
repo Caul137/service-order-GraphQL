@@ -18,9 +18,12 @@ export default function NewOrder() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  const [createService, { loading, error }] = useMutation(CREATE_SERVICE);
+  const [createService, { loading, error }] = useMutation(CREATE_SERVICE, {
+    refetchQueries: ["GetServices"],
+    awaitRefetchQueries: true
+  });
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
 
     if (!title || !description) {
